@@ -11,7 +11,9 @@ This is a tool that provides clean visualization of ExAC data (http://exac.broad
 
 ## How to Use This Tool
 
-Download python script, exacView.py, and run in terminal. Enter the full path for the downloaded ExAC file when prompted by the script. 
+Package Dependencies: xlsxwriter, xlrd
+Download python script, exacView.py, and run in terminal. 
+Enter the full path for the downloaded ExAC file when prompted by the script. 
 
 
 #### Other Things To Add
