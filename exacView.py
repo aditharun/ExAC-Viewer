@@ -28,8 +28,8 @@ def mutationMap(dict_mutations, mutations):
 mutationMap(dict_mutations, mutations)
 mutations = [x for x in mutations if not (x.isdigit())]
 
-#columns not to get
-colList = [0, 1, 2, 3, 4, 5, 8, 10]
+#columns with pertinent information
+colList = [6, 7, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23 , 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35]
 
 #rows to get (frequency greater than 1 and satisfies mutations to consider criteria)
 
@@ -60,7 +60,9 @@ formatFile = xlsxwriter.Workbook(os.getcwd() + "/FORMATTED" + data[findLast(data
 formatSheetChart = formatFile.add_worksheet()
 formatSheetFreq = formatFile.add_worksheet()
 
-
-
+#populate output with necessary data
+for x in range(len(rowList)):
+    for y in range(len(colList)):
+        formatSheetChart.write(x, y, sheet.cecolList[y]))ll_value(rowList[x], 
 
 formatFile.close()
