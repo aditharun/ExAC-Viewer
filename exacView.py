@@ -13,16 +13,10 @@ if os.path.isfile(data):
  else: 
      print("File path specified is not valid")
 
-#create file that will hold the final visualized data
-def findLast(path, character):
-    return path.rfind(character)
-
-formatFile = xlsxwriter.Workbook(os.getcwd() + "/FORMATTED" + data[findLast(data, '/') + 1: ])
-formatSheet = formatFile.add_worksheet()
-
 #figure out which mutation types to consider
 mutations = list(sys.argv[2])
-dict_mutations = {'1: all', '2: missense', '3: non coding transcript exon', '4: frameshift', '5: 5' UTR', '6: 3' UTR', '7: synonymous', '8: splice', '9: intron'}def mutationMap(dict_mutations, mutations):
+dict_mutations = {'1': 'all', '2': 'missense', '3': 'non coding transcript exon', '4': 'frameshift', '5': "5' UTR", '6': "3' UTR", '7': 'synonymous', '8': 'splice', '9': 'intron'}
+def mutationMap(dict_mutations, mutations):
     for item in mutations:
         if item =='1':
         	mutations.append(dict_mutations[item])
@@ -39,10 +33,34 @@ colList = [0, 1, 2, 3, 4, 5, 8, 10]
 
 #rows to get (frequency greater than 1 and satisfies mutations to consider criteria)
 
-rowList = []
+rowListFreq = []
 for x in range(sheet.nrows):
     try: 
         if float(sheet.cell_value(x, 11)) > 1.0:
-            rowList.append(x)
+            rowListFreq.append(x)
     except: 
         pass
+
+#pick rows that satisfy mutations to consider criteria
+rowListMut = []
+if mutations[0] != 'all': 
+    for y in range(len(mutations)):
+        print (mutations[y])
+        for x in range(sheet.nrows):
+            if mutations[y].split(" ")[0] == sheet.cell_value(x, 9).split()[0]:
+                rowListMut.append(x)
+                
+rowList = list(set(rowListFreq).intersection(rowListMut))
+
+#create file for final visualized data
+def findLast(path, character):
+    return path.rfind(character)
+
+formatFile = xlsxwriter.Workbook(os.getcwd() + "/FORMATTED" + data[findLast(data, '/') + 1: ])
+formatSheetChart = formatFile.add_worksheet()
+formatSheetFreq = formatFile.add_worksheet()
+
+
+
+
+formatFile.close()
