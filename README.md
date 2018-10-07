@@ -14,7 +14,7 @@ This is a tool that provides clean visualization of ExAC data (http://exac.broad
 Package Dependencies: xlsxwriter, xlrd
 Download python script, exacView.py, specify extra arguments as such and run in terminal
 
-Which mutations to consider? Enter 1 to consider all types (default), 2 for missense only, 3 for loss of function, 4 for frameshift, 5 for 5'UTR, 6 for 3'UTR, 7 for synonymous, 8 for splice, 9 for intron. If you want to consider onlt frameshift and 5'UTR enter the numbers 46 or 64. 
+Which mutations to consider? Enter 1 to consider all types (default), 2 for missense only, 3 for non coding transcript exon, 4 for frameshift, 5 for 5'UTR, 6 for 3'UTR, 7 for synonymous, 8 for splice, 9 for intron. If you want to consider onlt frameshift and 5'UTR enter the numbers 46 or 64. 
 
 #### exacView.py FullPathToDownloadedExACFile TypesOfMutations
 
