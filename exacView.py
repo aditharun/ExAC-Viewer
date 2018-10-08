@@ -97,16 +97,42 @@ for x in range(3):
     formatSheetChart.write(1, 21 + x, None, cell_formatColor7)
     formatSheetChart.write(1, 24 + x, None, cell_formatColor8)
 
+cell_formatFreq = workbook.add_format({'bold': True, 'font_size': 12, 'font_color': 'blue' })
+cell_formatEFreq = workbook.add_format({'bold': True, 'font_size': 12})
 
 for z in range(len(colList)): 
     if z == 4 + 3*ethnicCount: 
         formatSheetChart.write(0, z, ethnic[ethnicCount], cell_formatEthnic)
+        formatSheetFreq.write(0, ethnicCount + 1, ethnic[ethnicCount], cell_formatFreq)
         ethnicCount = ethnicCount + 1
 
     formatSheetChart.write(2, z, sheet.cell_value(0,colList[z]))
+    
 for x in range(len(rowList)):
     for y in range(len(colList)):
         formatSheetChart.write(x + 3, y , sheet.cell_value(rowList[x], colList[y]))
+
+formatSheetFreq.write(0, 0, 'Change', cell_formatFreq)
+
+cell_formatval = formatFile.add_format({'font_color': 'red'})
+
+for x in range(len(rowList)):
+    formatSheetFreq.write(x + 1, 0, sheet.cell_value(rowList[x], 6), cell_formatEFreq)
+    freq = 0
+    for y in range(len(colList)):
+        if colList[y] == 11: 
+            val = 100 * (sheet.cell_value(rowList[x], colList[y]) / sheet.cell_value(rowList[x], colList[y + 1]))
+            if val >= 1.0: 
+            	formatSheetFreq.write(x + 1, 1 , val, cell_formatval)
+            else: 
+                formatSheetFreq.write(x + 1, 1 , val )
+        if colList[y] == 15 + 3*freq:
+            val = 100 * (sheet.cell_value(rowList[x], colList[y])/ sheet.cell_value(rowList[x], colList[y + 1]))
+            if val >= 1.0:
+            	formatSheetFreq.write(x + 1, freq + 2, val, cell_formatval)
+            else: 
+            	formatSheetFreq.write(x + 1, freq + 2, val)
+            freq = freq + 1
 
 
 formatFile.close()
