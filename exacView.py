@@ -1,9 +1,10 @@
 import xlrd
 import xlsxwriter
 import os
+import sys
 
 #load File
-data = input("Exac File Path: ")
+data = sys.argv[1]
 if os.path.isfile(data):
     try: 
         wb = xlrd.open_workbook(data)
@@ -103,6 +104,7 @@ for x in range(3):
 cell_formatFreq = workbook.add_format({'bold': True, 'font_size': 12, 'font_color': 'blue' })
 cell_formatEFreq = workbook.add_format({'bold': True, 'font_size': 12})
 
+#generate ethnicity header
 for z in range(len(colList)): 
     if z == 4 + 3*ethnicCount: 
         formatSheetChart.write(0, z, ethnic[ethnicCount], cell_formatEthnic)
@@ -110,7 +112,8 @@ for z in range(len(colList)):
         ethnicCount = ethnicCount + 1
 
     formatSheetChart.write(2, z, sheet.cell_value(0,colList[z]))
-    
+
+#generate neatly formatted data in correct position and order
 for x in range(len(rowList)):
     for y in range(len(colList)):
         formatSheetChart.write(x + 3, y , sheet.cell_value(rowList[x], colList[y]))
@@ -119,6 +122,7 @@ formatSheetFreq.write(0, 0, 'Change', cell_formatFreq)
 
 cell_formatval = formatFile.add_format({'font_color': 'red'})
 
+#generate frequency table with percent frequency of each mutation
 for x in range(len(rowList)):
     formatSheetFreq.write(x + 1, 0, sheet.cell_value(rowList[x], 6), cell_formatEFreq)
     freq = 0
@@ -137,5 +141,5 @@ for x in range(len(rowList)):
             	formatSheetFreq.write(x + 1, freq + 2, val)
             freq = freq + 1
 
-
+#close excel workbook
 formatFile.close()
