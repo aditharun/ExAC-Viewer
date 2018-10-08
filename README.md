@@ -2,6 +2,10 @@
 
 This is a tool that provides clean visualization of ExAC data (http://exac.broadinstitute.org/) that is easy to interpret and understand.
 
+## Output
+
+Returns an excel file stored in your current working directory, titled the same as you initial file but with the word FORMATTED inserted. The first sheet of the excel file is a neatly and cleanly organized table of pertinent information regarding each mutation of interest split by ethnicity. The second sheet is a table that shows percent frequency of mutations in the overall population and by ethnicity. This table condenses all the ExAC data into one tidy chart that is easy to interpret. 
+
 ## Functionality
 
 - takes downloaded ExAC file for a gene
@@ -14,12 +18,6 @@ This is a tool that provides clean visualization of ExAC data (http://exac.broad
 Package Dependencies: xlsxwriter, xlrd
 Download python script, exacView.py, specify extra arguments as such and run in terminal
 
-Which mutations to consider? Enter 1 to consider all types (default), 2 for missense only, 3 for non coding transcript exon, 4 for frameshift, 5 for 5'UTR, 6 for 3'UTR, 7 for synonymous, 8 for splice, 9 for intron. If you want to consider onlt frameshift and 5'UTR enter the numbers 46 or 64. 
+Which mutations to consider? Enter 1 to consider all types (default), 2 for missense only, 3 for non coding transcript exon, 4 for frameshift, 5 for 5'UTR, 6 for 3'UTR, 7 for synonymous, 8 for splice, 9 for intron. If you want to consider only frameshift and 5'UTR enter the numbers 46 or 64. 
 
-#### exacView.py FullPathToDownloadedExACFile TypesOfMutations
-
-
-#### Other Things To Add
-- enter gene name and get initial ExAC file
-- allow for multiple genes to be inputted
-- generate pysch versus nonpsych data, cancer versus noncancer data
+#### Example Command Line Input for Program:: exacView.py FullPathToDownloadedExACFile TypesOfMutations
