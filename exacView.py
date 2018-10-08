@@ -29,7 +29,7 @@ mutationMap(dict_mutations, mutations)
 mutations = [x for x in mutations if not (x.isdigit())]
 
 #columns with pertinent information
-colList = [6, 7, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23 , 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35]
+colList = [6, 7, 9, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 23 , 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35]
 
 #rows to get (frequency greater than 1 and satisfies mutations to consider criteria)
 
@@ -61,8 +61,52 @@ formatSheetChart = formatFile.add_worksheet()
 formatSheetFreq = formatFile.add_worksheet()
 
 #populate output with necessary data
+ethnic = ['Overall', 'African', 'E.Asian', 'Euro(NF)', 'Finnish', 'Latino', 'Other', 'S.Asian']
+ethnicCount = 0
+
+#cell_format method does not allow for iteration, and the add format method is a pseudodictionary, not an actual dictionary, one cannot rekey values. This lead to the ugly code below until line 98. 
+
+cell_formatEthnic = formatFile.add_format({'bold': True, 'font_size': 14})
+
+cell_formatColor1 = formatFile.add_format()
+cell_formatColor2 = formatFile.add_format()
+cell_formatColor3 = formatFile.add_format()
+cell_formatColor4 = formatFile.add_format()
+cell_formatColor5 = formatFile.add_format()
+cell_formatColor6 = formatFile.add_format()
+cell_formatColor7 = formatFile.add_format()
+cell_formatColor8 = formatFile.add_format()
+color = ['blue', 'red', 'black', 'green', 'orange', 'cyan', 'pink', 'purple']
+
+cell_formatColor1.set_bg_color(color[0])
+cell_formatColor2.set_bg_color(color[1])
+cell_formatColor3.set_bg_color(color[2])
+cell_formatColor4.set_bg_color(color[3])
+cell_formatColor5.set_bg_color(color[4])
+cell_formatColor6.set_bg_color(color[5])
+cell_formatColor7.set_bg_color(color[6])
+cell_formatColor8.set_bg_color(color[7])
+
+for x in range(3):
+    formatSheetChart.write(1, 3 + x, None, cell_formatColor1)
+    formatSheetChart.write(1, 6 + x, None, cell_formatColor2)
+    formatSheetChart.write(1, 9 + x, None, cell_formatColor3)
+    formatSheetChart.write(1, 12 + x, None, cell_formatColor4)
+    formatSheetChart.write(1, 15 + x, None, cell_formatColor5)
+    formatSheetChart.write(1, 18 + x, None, cell_formatColor6)
+    formatSheetChart.write(1, 21 + x, None, cell_formatColor7)
+    formatSheetChart.write(1, 24 + x, None, cell_formatColor8)
+
+
+for z in range(len(colList)): 
+    if z == 4 + 3*ethnicCount: 
+        formatSheetChart.write(0, z, ethnic[ethnicCount], cell_formatEthnic)
+        ethnicCount = ethnicCount + 1
+
+    formatSheetChart.write(2, z, sheet.cell_value(0,colList[z]))
 for x in range(len(rowList)):
     for y in range(len(colList)):
-        formatSheetChart.write(x, y, sheet.cecolList[y]))ll_value(rowList[x], 
+        formatSheetChart.write(x + 3, y , sheet.cell_value(rowList[x], colList[y]))
+
 
 formatFile.close()
