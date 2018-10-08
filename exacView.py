@@ -43,12 +43,15 @@ for x in range(sheet.nrows):
 
 #pick rows that satisfy mutations to consider criteria
 rowListMut = []
-if mutations[0] != 'all': 
+if 'all' not in mutations: 
     for y in range(len(mutations)):
-        print (mutations[y])
         for x in range(sheet.nrows):
             if mutations[y].split(" ")[0] == sheet.cell_value(x, 9).split()[0]:
                 rowListMut.append(x)
+
+if 'all' in mutations: 
+    for x in range(sheet.nrows):
+        rowListMut.append(x)
                 
 rowList = list(set(rowListFreq).intersection(rowListMut))
 
