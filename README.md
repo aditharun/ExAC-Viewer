@@ -1,6 +1,11 @@
-# ExAC Viewer
+# ExAC Viewer: Tools for visualizing ExAC Data for easy analysis and interpretation
 
-This is a tool that provides clean visualization of ExAC data (http://exac.broadinstitute.org/) that is easy to interpret and understand.
+
+Data sourced from ExAC (http://exac.broadinstitute.org/)
+
+# Tool 1: ExAC View
+
+Takes the raw downloaded ExAc data for a gene, and makes it easy to understand and interpret aiding research efforts. 
 
 ## Output
 
@@ -32,3 +37,19 @@ Which mutations to consider?
 If you want to consider a combination of mutation types, such as only frameshift and 5'UTR enter the numbers 46 or 64. 
 
 #### Example Command Line Input for Program for Mac:: python3 exacView.py PathToDownloadedExACFile.xlsx TypesOfMutationsNumbers
+
+
+# Tool 2: Mutation Histograms
+
+It is hard to look at the ExAc data for an entire gene and figure out which mutations are interesting to consider. This tool displays the pertinent information from the entire data file in a bar graph that is inuitively easy to understand. From here, a researcher can decide which mutations they should look into further. 
+
+## Output: 
+
+Bar graph showing mutation counts per residue
+Shown in a python environment so automatic scaling and zooming are possible. 
+
+## How to Use This Tool: 
+
+Input a text file with the sequence of the protein, and the corresponding raw downloaded exac file as system parameters and run the script titled MutationHistograms.py
+
+
