@@ -1,21 +1,27 @@
+import sys
 import xlrd
 import xlsxwriter
 import os
-import sys
 
-#load File
-data = sys.argv[1]
-if os.path.isfile(data):
-    try: 
-        wb = xlrd.open_workbook(data)
-        sheet = wb.sheet_by_index(0)
-    except: 
-        print("Unable to open ExAC Excel File")
- else: 
-     print("File path specified is not valid")
 
-#figure out which mutation types to consider
+file = sys.argv[1]
+
+if not os.path.isfile(file):
+	print("not valid path")
+	sys.exit()
+
+
+#import csv file
+wb = xlrd.open_workbook(file)
+exac = wb.sheet_by_index(0)
+
+
+#select mutation types you want, enter mutations you want as a string of numbers (e.x. 123)
 mutations = list(sys.argv[2])
+mutations = [ x for x in mutations if x.isdigit() ]
+
+mutations.sort()
+
 dict_mutations = {'1': 'all', '2': 'missense', '3': 'non coding transcript exon', '4': 'frameshift', '5': "5' UTR", '6': "3' UTR", '7': 'synonymous', '8': 'splice', '9': 'intron'}
 def mutationMap(dict_mutations, mutations):
     for item in mutations:
@@ -29,58 +35,69 @@ def mutationMap(dict_mutations, mutations):
 mutationMap(dict_mutations, mutations)
 mutations = [x for x in mutations if not (x.isdigit())]
 
-#columns with pertinent information
-colList = [6, 7, 9, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 23 , 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35]
+#default parameter is all mutations are considered
+if not mutations:
+	mutations = ['all']
 
-#rows to get (frequency greater than 1 and satisfies mutations to consider criteria)
 
-rowListFreq = []
-for x in range(sheet.nrows):
-    try: 
-        if float(sheet.cell_value(x, 11)) > 1.0:
-            rowListFreq.append(x)
-    except: 
-        pass
+#create ethnic breakdown w/ change as columns and rows as count, number, 
+#Hzygote with color markings for each ethnicity
 
-#pick rows that satisfy mutations to consider criteria
-rowListMut = []
+columns= [6,7,11,12,13,15,16, 17, 18, 19, 20, 21, 22, 23 , 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35]
+
+#get rows that are >1 and fit mutation criteria
+rows = []
+for x in range(exac.nrows):
+	if isinstance(exac.cell_value(x,11), float) and float(exac.cell_value(x,11)) > 1.0:
+		rows.append(x)
+
+rows_mut = []
 if 'all' not in mutations: 
     for y in range(len(mutations)):
-        for x in range(sheet.nrows):
-            if mutations[y].split(" ")[0] == sheet.cell_value(x, 9).split()[0]:
-                rowListMut.append(x)
+        for x in range(exac.nrows):
+            if mutations[y].split(" ")[0] == exac.cell_value(x, 9).split()[0]:
+                rows_mut.append(x)
+if 'all' in mutations:
+	for x in range(exac.nrows):
+		rows_mut.append(x)
+set_row = list(set(rows).intersection(rows_mut))
 
-if 'all' in mutations: 
-    for x in range(sheet.nrows):
-        rowListMut.append(x)
-                
-rowList = list(set(rowListFreq).intersection(rowListMut))
+chart = xlsxwriter.Workbook(os.getcwd() + "/SummaryChart.xlsx")
+table = chart.add_worksheet()
+frequency = chart.add_worksheet()
 
-#create file for final visualized data
-def findLast(path, character):
-    return path.rfind(character)
+ethnic = ['Overall', 'African', 'E. Asian', 'Euro (NF)', 'Finnish', 'Latino', 'Other', 'S. Asian']
+ethnic_format = chart.add_format({'bold': True, 'font_size': 12})
 
-formatFile = xlsxwriter.Workbook(os.getcwd() + "/FORMATTED" + data[findLast(data, '/') + 1: ])
-formatSheetChart = formatFile.add_worksheet()
-formatSheetFreq = formatFile.add_worksheet()
+#write data into the new excel spreadsheet
+t = 0
+for x in range(len(columns)):
+	table.write(2,0,"Change")
+	table.write(2,1,"Consequence")
+	if x % 3 == 1 and x != 0 and x != 1:
+		table.write(2,x,"Hzygote")
+	if x % 3 == 0 and x != 0 and x != 1:
+		table.write(2,x,"Number")
+		table.write(0,x,ethnic[t],ethnic_format)
+		t = t + 1
+	if x % 3 == 2 and x != 0 and x != 1:
+		table.write(2,x,"Count")
 
-#populate output with necessary data
-ethnic = ['Overall', 'African', 'E.Asian', 'Euro(NF)', 'Finnish', 'Latino', 'Other', 'S.Asian']
-ethnicCount = 0
+for x in range(len(set_row)):
+	for y in range(len(columns)):
+		table.write(x+3,y,exac.cell_value(set_row[x], columns[y]))
 
-#cell_format method does not allow for iteration, and the add format method is a pseudodictionary, not an actual dictionary, one cannot rekey values. This lead to the ugly code below until line 98. 
+#color formatting
+color = ['blue', 'red', 'purple', 'green', 'orange', 'cyan', 'pink', 'lime']
 
-cell_formatEthnic = formatFile.add_format({'bold': True, 'font_size': 14})
-
-cell_formatColor1 = formatFile.add_format()
-cell_formatColor2 = formatFile.add_format()
-cell_formatColor3 = formatFile.add_format()
-cell_formatColor4 = formatFile.add_format()
-cell_formatColor5 = formatFile.add_format()
-cell_formatColor6 = formatFile.add_format()
-cell_formatColor7 = formatFile.add_format()
-cell_formatColor8 = formatFile.add_format()
-color = ['blue', 'red', 'black', 'green', 'orange', 'cyan', 'pink', 'purple']
+cell_formatColor1 = chart.add_format()
+cell_formatColor2 = chart.add_format()
+cell_formatColor3 = chart.add_format()
+cell_formatColor4 = chart.add_format()
+cell_formatColor5 = chart.add_format()
+cell_formatColor6 = chart.add_format()
+cell_formatColor7 = chart.add_format()
+cell_formatColor8 = chart.add_format()
 
 cell_formatColor1.set_bg_color(color[0])
 cell_formatColor2.set_bg_color(color[1])
@@ -91,55 +108,40 @@ cell_formatColor6.set_bg_color(color[5])
 cell_formatColor7.set_bg_color(color[6])
 cell_formatColor8.set_bg_color(color[7])
 
+#apply colors to spreadsheet
 for x in range(3):
-    formatSheetChart.write(1, 3 + x, None, cell_formatColor1)
-    formatSheetChart.write(1, 6 + x, None, cell_formatColor2)
-    formatSheetChart.write(1, 9 + x, None, cell_formatColor3)
-    formatSheetChart.write(1, 12 + x, None, cell_formatColor4)
-    formatSheetChart.write(1, 15 + x, None, cell_formatColor5)
-    formatSheetChart.write(1, 18 + x, None, cell_formatColor6)
-    formatSheetChart.write(1, 21 + x, None, cell_formatColor7)
-    formatSheetChart.write(1, 24 + x, None, cell_formatColor8)
+	table.write(1, 2 + x, None, cell_formatColor1)
+	table.write(1, 5 + x, None, cell_formatColor2)
+	table.write(1, 8 + x, None, cell_formatColor3)
+	table.write(1, 11 + x, None, cell_formatColor4)
+	table.write(1, 14 + x, None, cell_formatColor5)
+	table.write(1, 17 + x, None, cell_formatColor6)
+	table.write(1, 20 + x, None, cell_formatColor7)
+	table.write(1, 23 + x, None, cell_formatColor8)
 
-cell_formatFreq = workbook.add_format({'bold': True, 'font_size': 12, 'font_color': 'blue' })
-cell_formatEFreq = workbook.add_format({'bold': True, 'font_size': 12})
 
-#generate ethnicity header
-for z in range(len(colList)): 
-    if z == 4 + 3*ethnicCount: 
-        formatSheetChart.write(0, z, ethnic[ethnicCount], cell_formatEthnic)
-        formatSheetFreq.write(0, ethnicCount + 1, ethnic[ethnicCount], cell_formatFreq)
-        ethnicCount = ethnicCount + 1
+#create summary chart w/ change as column and ethnicity as subsequent columns with 
+#percentage of allele frequency (count / number)
+item_list = ['item', 5, 'foo', 3.14, True]
+item_list = [e for e in item_list if e not in ('item', 5)]
 
-    formatSheetChart.write(2, z, sheet.cell_value(0,colList[z]))
+rem = [6,7,13,17,20,23,26,29,32,35]
+columns = list(set(columns).difference(rem))
 
-#generate neatly formatted data in correct position and order
-for x in range(len(rowList)):
-    for y in range(len(colList)):
-        formatSheetChart.write(x + 3, y , sheet.cell_value(rowList[x], colList[y]))
+frequency.write(0,0,"Change")
+frequency.write(0,1,"Consequence")
+for x in range(len(ethnic)):
+	frequency.write(0,x+2,ethnic[x])
 
-formatSheetFreq.write(0, 0, 'Change', cell_formatFreq)
+for x in range(len(set_row)):
+	frequency.write(x+1,0,exac.cell_value(set_row[x],6))
+	frequency.write(x+1,1,exac.cell_value(set_row[x],7))
 
-cell_formatval = formatFile.add_format({'font_color': 'red'})
+for x in range(len(set_row)):
+	for y in range(int(len(columns)/2)):
+		allelefreq = float( exac.cell_value(set_row[x], columns[2*y]) ) / ( exac.cell_value(set_row[x], columns[(2*y) + 1]) )
+		percentage = allelefreq * 100
+		frequency.write(x + 1, y + 2, percentage)
 
-#generate frequency table with percent frequency of each mutation
-for x in range(len(rowList)):
-    formatSheetFreq.write(x + 1, 0, sheet.cell_value(rowList[x], 6), cell_formatEFreq)
-    freq = 0
-    for y in range(len(colList)):
-        if colList[y] == 11: 
-            val = 100 * (sheet.cell_value(rowList[x], colList[y]) / sheet.cell_value(rowList[x], colList[y + 1]))
-            if val >= 1.0: 
-            	formatSheetFreq.write(x + 1, 1 , val, cell_formatval)
-            else: 
-                formatSheetFreq.write(x + 1, 1 , val )
-        if colList[y] == 15 + 3*freq:
-            val = 100 * (sheet.cell_value(rowList[x], colList[y])/ sheet.cell_value(rowList[x], colList[y + 1]))
-            if val >= 1.0:
-            	formatSheetFreq.write(x + 1, freq + 2, val, cell_formatval)
-            else: 
-            	formatSheetFreq.write(x + 1, freq + 2, val)
-            freq = freq + 1
 
-#close excel workbook
-formatFile.close()
+chart.close()
