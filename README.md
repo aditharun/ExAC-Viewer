@@ -1,55 +1,61 @@
-# ExAC Viewer: Tools for visualizing ExAC Data for easy analysis and interpretation
+# ExAC Viewer: Clean visualization of ExAC Data 
 
+This script generates a summary of the ExAC Data for a gene of interest. The summary consists of an ethnic breakdown and allele frequency percentage. It takes in raw downloaded data for a gene, and creates charts that are easy to understand and interpret. 
 
-Data sourced from ExAC (http://exac.broadinstitute.org/)
+These charts look nice, and can be made into manuscript-ready tables with relative ease. 
 
-# Tool 1: ExAC View
+An example pipeline of this script is shown for the gene Sig1R, under the folder examplePipeline. 
 
-Takes the raw downloaded ExAc data for a gene, and makes it easy to understand and interpret aiding research efforts. 
+### Input
 
-## Output
+Choose a gene from the ExAC portal (http://exac.broadinstitute.org/). 
+Download the csv file with all the data. 
+Save the csv file as an xls file. 
+Store the xls file in the same directory as this script.
 
-Returns an excel file stored in your current working directory, titled the same as you initial file but with the word FORMATTED inserted. The first sheet of the excel file is a neatly and cleanly organized table of pertinent information regarding each mutation of interest split by ethnicity. The second sheet is a table that shows percent frequency of mutations in the overall population and by ethnicity. This table condenses all the ExAC data into one tidy chart that is easy to interpret. 
+### Dependencies 
 
-## Functionality
+Make sure python3 is installed (https://www.python.org/downloads/). 
+  Check python version: 
+    on Mac --> python --version   
+    on Windows --> python
+Install xlrd and xlsxwriter packages by the following command in the terminal: 
+  pip3 install xlrd
+  pip3 install xlsxwriter
 
-- takes downloaded ExAC file for a gene
-- removes all mutations with frequency 1
-- user can specify a class of mutations to view (e.g missense, loss of function, splice)
-- returns color coded chart of mutations with ethnic distribution and separate table of frequencies split by ethnicity
+### Runnning the Script
 
-## How to Use This Tool
+1) download the script
+2) follow the directions in the above section (Dependencies)
+2) store the script in the same directory as the xls ExAC file
+3) run the command as such:
+        python3 scriptname.py filenameofExAC mutations
+        
+        scriptname.py is the name of the python script that you downloaded from this repository
+        filenameofExAC is the file name for the xls ExAC file
+        mutations is the parameter that specifies which mutations to consider
+        
+        mutations LEGEND
+        
+        Which mutations to consider? 
+        1 to consider all types (default parameter)
+        2 for missense only
+        3 for non coding transcript exon
+        4 for frameshift
+        5 for 5'UTR
+        6 for 3'UTR
+        7 for synonymous
+        8 for splice
+        9 for intron
+        
+        If you want to consider a combination of mutation types, such as frameshift and 5'UTR enter the numbers 46 or 64. 
 
-Package Dependencies: xlsxwriter, xlrd
-Download python script, exacView.py, specify extra arguments as such and run in terminal
+### Output
 
+The script returns an Excel file outputted to the directory from which you ran the program. The output file will be titled SummaryChart.xlsx. 
 
-Which mutations to consider? 
-1 to consider all types (default)
-2 for missense only
-3 for non coding transcript exon
-4 for frameshift
-5 for 5'UTR
-6 for 3'UTR
-7 for synonymous
-8 for splice
-9 for intron
-If you want to consider a combination of mutation types, such as only frameshift and 5'UTR enter the numbers 46 or 64. 
+Only mtations with allele count greater than 1 are considered. This is to ensure that only "relatively frequent" mutations are considered, and so the visualizaiton of the data is meaningful. This parameter can be changed easily within the script. 
 
-#### Example Command Line Input for Program for Mac:: python3 exacView.py PathToDownloadedExACFile.xlsx TypesOfMutationsNumbers
-
-
-# Tool 2: Mutation Histograms
-
-It is hard to look at the ExAc data for an entire gene and figure out which mutations are interesting to consider. This tool displays the pertinent information from the entire data file in a bar graph that is inuitively easy to understand. From here, a researcher can decide which mutations they should look into further. 
-
-## Output: 
-
-Bar graph showing mutation counts per residue
-Shown in a python environment so automatic scaling and zooming are possible. 
-
-## How to Use This Tool: 
-
-Input a text file with the sequence of the protein, and the corresponding raw downloaded exac file as system parameters and run the script titled MutationHistograms.py
-
-
+There are two charts that are created: 
+  1) Ethnic Breakdown -- reports allele count, total allele number, and number of homozygotes for each mutation
+  2) Allele Frequency Percentage -- reports allele frequency percentage affected by each mutation, and it is broken down by ethnic subgroup
